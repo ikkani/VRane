@@ -17,7 +17,7 @@ public class MovementCraneBoom : MonoBehaviour {
         rotCraneBoom = (int)Input.GetAxisRaw("Horizontal");
     }
 
-    private void LateUpdate()
+    private void FixedUpdate()
     {
         if (rotCraneBoom != 0)
             rb.AddTorque(transform.up * (rotCraneBoom * velRotation));
