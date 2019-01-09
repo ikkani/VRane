@@ -21,6 +21,7 @@ public class ContainerGrabbing : MonoBehaviour {
             dad.parent = null;
             agarrado = false;
             dad.GetComponent<Rigidbody>().isKinematic = false;
+            dad.GetComponent<Rigidbody>().useGravity = true;
             Debug.Log("Cepeda calvo");
         }
 	}
@@ -33,6 +34,7 @@ public class ContainerGrabbing : MonoBehaviour {
             dad = container.parent;
             dad.parent = gameObject.transform;
             dad.GetComponent<Rigidbody>().isKinematic = true;
+            dad.GetComponent<Rigidbody>().useGravity = false;
             agarrado = true;
             Debug.Log("Subiendo xd");
             contador = Time.time;
