@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 54044908848935266}
   - component: {fileID: 65127913040736572}
   - component: {fileID: 138529665472134378}
+  - component: {fileID: 114987507231475450}
   m_Layer: 0
   m_Name: gancho2
   m_TagString: Untagged
@@ -95,7 +96,7 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 10
   m_Drag: 1
-  m_AngularDrag: 10
+  m_AngularDrag: 100
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -113,6 +114,17 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.129744, y: 0.552357, z: 0.33956}
   m_Center: {x: -0.00028200075, y: -0.1179655, z: -0.0022287667}
+--- !u!114 &114987507231475450
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1030123079263402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d173ac9ab403dde41ad14420b0b816fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!138 &138529665472134378
 FixedJoint:
   m_ObjectHideFlags: 1
