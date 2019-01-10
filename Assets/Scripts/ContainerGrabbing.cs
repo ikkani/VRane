@@ -20,9 +20,10 @@ public class ContainerGrabbing : MonoBehaviour {
         {
             dad.parent = null;
             agarrado = false;
-            dad.GetComponent<Rigidbody>().isKinematic = false;
             dad.GetComponent<Rigidbody>().useGravity = true;
-            Debug.Log("Cepeda calvo");
+            dad.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+            dad.GetComponent<Rigidbody>().mass = 10000;
+            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
         }
 	}
 
@@ -33,10 +34,11 @@ public class ContainerGrabbing : MonoBehaviour {
             container = other.gameObject.transform;
             dad = container.parent;
             dad.parent = gameObject.transform;
-            dad.GetComponent<Rigidbody>().isKinematic = true;
             dad.GetComponent<Rigidbody>().useGravity = false;
+            dad.GetComponent<Rigidbody>().mass = 1;
+            dad.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
             agarrado = true;
-            Debug.Log("Subiendo xd");
             contador = Time.time;
         }
     }
