@@ -24,6 +24,8 @@ public class ContainerGrabbing : MonoBehaviour {
             dad.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
             dad.GetComponent<Rigidbody>().mass = 10000;
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+
+            Estados.agarrando = false;
         }
 	}
 
@@ -40,6 +42,8 @@ public class ContainerGrabbing : MonoBehaviour {
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
             agarrado = true;
             contador = Time.time;
+
+            Estados.agarrando = true;
         }
     }
 }

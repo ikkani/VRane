@@ -7,10 +7,17 @@ public class Starter : MonoBehaviour {
     public float time = 5;
     public float aceleracion = 0.1f;
     public float velocidad  = 0.1f;
+
+    float initTime;
 	
+    void Start()
+    {
+        initTime = Time.time;
+    }
+
 	// Update is called once per frame
 	void Update () {
-		if(Time.time < time)
+		if((Time.time-initTime) < time)
         {
             MovementCable.temp = Mathf.Clamp(MovementCable.temp - aceleracion * Time.deltaTime, -velocidad, velocidad);
         }

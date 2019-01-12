@@ -64,7 +64,7 @@ public class MovementCable : MonoBehaviour
         posInicial = new Vector3(); //Creamos el Vector3
         posInicial = transform.localPosition; //Guardamos la posición inicial LOCAL (utilizada en objectos children/hijos)
 
-        //SonidoCable.volume=0;	
+        SonidoCable.volume=0;	
 
 
     }
@@ -72,12 +72,15 @@ public class MovementCable : MonoBehaviour
     void Update()
     { //Función del sistema procesos antes del renderizado
 
-        Malla.rotation = Pivote.transform.rotation;
-
-        for (int i = 0; i < 35; i++)
+        if (Estados.encendido)
         {
-            if ((i > nElemento) && (Huesos[i].position != Pivote.transform.position)) Huesos[i].position = Pivote.transform.position;
-            else if ((i <= nElemento) && (Huesos[i].position != nGameObject[i].transform.position)) Huesos[i].position = nGameObject[i].transform.position;
+            Malla.rotation = Pivote.transform.rotation;
+
+            for (int i = 0; i < 35; i++)
+            {
+                if ((i > nElemento) && (Huesos[i].position != Pivote.transform.position)) Huesos[i].position = Pivote.transform.position;
+                else if ((i <= nElemento) && (Huesos[i].position != nGameObject[i].transform.position)) Huesos[i].position = nGameObject[i].transform.position;
+            }
         }
 
     }
@@ -85,90 +88,93 @@ public class MovementCable : MonoBehaviour
     void FixedUpdate()
     { //Función del sistema para Físicas
 
-        //La Elevación del cable funciona pulsando las teclas Z-X
-        if (Input.GetKey(KeyCode.Z)) temp = Mathf.Clamp(temp + aceleracion * Time.deltaTime, -velocidad, velocidad);
-        else if (Input.GetKey(KeyCode.X)) temp = Mathf.Clamp(temp - aceleracion * Time.deltaTime, -velocidad, velocidad);
-        else if (temp > 0) temp = Mathf.Clamp(temp - aceleracion * Time.deltaTime * 3, 0, temp);
-        else temp = Mathf.Clamp(temp + aceleracion * Time.deltaTime * 3, temp, 0);
-        
-
-        //Limitar velocidad elevación a la mitad cuando estemos cerca de límite de rango
-        if ((temp < 0) && (nElemento == 33)) temp *= 0.5f;
-        if ((temp > 0) && (nElemento == 0)) temp *= 0.5f; //34 eslabones(indice 33) + 1 fijo
-
-        //Evitar crear índices fuera de rango [0-27]
-        if ((transform.localPosition.y + temp > limSuperior) && (nElemento == 0)) temp = 0.0f;
-        if ((transform.localPosition.y + temp < limInferior) && (nElemento == 33)) temp = 0.0f; //34 eslabones(indice 33) + 1 fijo	
-
-        SonidoCable.volume = Mathf.Clamp(Mathf.Abs(temp) * 2, 0, 1);
-
-
-        //Destruimos trozo de cable cuando nuestra posición LOCAL está por encima del límite superior
-        if (transform.localPosition.y + temp > limSuperior)
+        if (Estados.encendido)
         {
+            //La Elevación del cable funciona pulsando las teclas Z-X
+            if (Input.GetKey(KeyCode.Z)) temp = Mathf.Clamp(temp + aceleracion * Time.deltaTime, -velocidad, velocidad);
+            else if (Input.GetKey(KeyCode.X)) temp = Mathf.Clamp(temp - aceleracion * Time.deltaTime, -velocidad, velocidad);
+            else if (temp > 0) temp = Mathf.Clamp(temp - aceleracion * Time.deltaTime * 3, 0, temp);
+            else temp = Mathf.Clamp(temp + aceleracion * Time.deltaTime * 3, temp, 0);
 
-            if (nElemento == 1)
-            { //Solo existe un trozo de cable creado
 
-                transform.position = new Vector3(transform.position.x, nGameObject[1].transform.position.y, transform.position.z);
-                limInferior = transform.localPosition.y;
-                Destroy(nGameObject[1]);
-                CableFinal.connectedBody = GetComponent<Rigidbody>(); //conectar Fixed Joint del Cable unido al gancho con este objeto
+            //Limitar velocidad elevación a la mitad cuando estemos cerca de límite de rango
+            if ((temp < 0) && (nElemento == 33)) temp *= 0.5f;
+            if ((temp > 0) && (nElemento == 0)) temp *= 0.5f; //34 eslabones(indice 33) + 1 fijo
 
-            }
-            else
+            //Evitar crear índices fuera de rango [0-27]
+            if ((transform.localPosition.y + temp > limSuperior) && (nElemento == 0)) temp = 0.0f;
+            if ((transform.localPosition.y + temp < limInferior) && (nElemento == 33)) temp = 0.0f; //34 eslabones(indice 33) + 1 fijo	
+
+            SonidoCable.volume = Mathf.Clamp(Mathf.Abs(temp) * 2, 0, 1);
+
+
+            //Destruimos trozo de cable cuando nuestra posición LOCAL está por encima del límite superior
+            if (transform.localPosition.y + temp > limSuperior)
             {
 
-                transform.position = new Vector3(transform.position.x, nGameObject[nElemento].transform.position.y, transform.position.z);
-                limInferior = transform.localPosition.y;
-                Destroy(nGameObject[nElemento]);
+                if (nElemento == 1)
+                { //Solo existe un trozo de cable creado
+
+                    transform.position = new Vector3(transform.position.x, nGameObject[1].transform.position.y, transform.position.z);
+                    limInferior = transform.localPosition.y;
+                    Destroy(nGameObject[1]);
+                    CableFinal.connectedBody = GetComponent<Rigidbody>(); //conectar Fixed Joint del Cable unido al gancho con este objeto
+
+                }
+                else
+                {
+
+                    transform.position = new Vector3(transform.position.x, nGameObject[nElemento].transform.position.y, transform.position.z);
+                    limInferior = transform.localPosition.y;
+                    Destroy(nGameObject[nElemento]);
 
 
-                tempFixedJoint = nGameObject[nElemento - 1].GetComponent<FixedJoint>(); //Conectar al trozo de cable anterior
-                tempFixedJoint.connectedBody = GetComponent<Rigidbody>();
+                    tempFixedJoint = nGameObject[nElemento - 1].GetComponent<FixedJoint>(); //Conectar al trozo de cable anterior
+                    tempFixedJoint.connectedBody = GetComponent<Rigidbody>();
+
+                }
+
+                nElemento -= 1;
 
             }
 
-            nElemento -= 1;
-
-        }
-
-        //Creamos trozo de cable cuando nuestra posición LOCAL está por debajo de -0.64	
-        if (transform.localPosition.y + temp < limInferior)
-        {
-
-            nElemento += 1;
-
-            if (nElemento == 1)
-            { //No existe ningún trozo de cable creado
-
-                nGameObject[nElemento] = Instantiate(prefab, transform.position, transform.rotation); //Creamos nuevo trozo de cable
-                tempRigidBody = nGameObject[nElemento].GetComponent<Rigidbody>();
-                tempFixedJoint = nGameObject[nElemento].GetComponent<FixedJoint>();
-                CableFinal.connectedBody = tempRigidBody;   //Conectamos el Cable unido al gancho con el nuevo trozo de cable creado		
-                transform.localPosition += new Vector3(0, 0.55f, 0);
-                limSuperior = transform.localPosition.y;
-                tempFixedJoint.connectedBody = GetComponent<Rigidbody>(); //Conectamos el nuevo trozo de cable creado a este objeto
-            }
-            else
+            //Creamos trozo de cable cuando nuestra posición LOCAL está por debajo de -0.64	
+            if (transform.localPosition.y + temp < limInferior)
             {
 
-                nGameObject[nElemento] = Instantiate(prefab, transform.position, transform.rotation); //Creamos nuevo trozo de cable
-                tempRigidBody = nGameObject[nElemento].GetComponent<Rigidbody>();
-                tempFixedJoint = nGameObject[nElemento].GetComponent<FixedJoint>();
-                temp2FixedJoint = nGameObject[nElemento - 1].GetComponent<FixedJoint>();
-                temp2FixedJoint.connectedBody = tempRigidBody; //Unimos el trozo de cable anterior al nuevo trozo de cable			
-                transform.localPosition += new Vector3(0, 0.55f, 0);
-                limSuperior = transform.localPosition.y;
-                tempFixedJoint.connectedBody = GetComponent<Rigidbody>(); //Unimos el nuevo trozo de cable a este objeto
+                nElemento += 1;
+
+                if (nElemento == 1)
+                { //No existe ningún trozo de cable creado
+
+                    nGameObject[nElemento] = Instantiate(prefab, transform.position, transform.rotation); //Creamos nuevo trozo de cable
+                    tempRigidBody = nGameObject[nElemento].GetComponent<Rigidbody>();
+                    tempFixedJoint = nGameObject[nElemento].GetComponent<FixedJoint>();
+                    CableFinal.connectedBody = tempRigidBody;   //Conectamos el Cable unido al gancho con el nuevo trozo de cable creado		
+                    transform.localPosition += new Vector3(0, 0.55f, 0);
+                    limSuperior = transform.localPosition.y;
+                    tempFixedJoint.connectedBody = GetComponent<Rigidbody>(); //Conectamos el nuevo trozo de cable creado a este objeto
+                }
+                else
+                {
+
+                    nGameObject[nElemento] = Instantiate(prefab, transform.position, transform.rotation); //Creamos nuevo trozo de cable
+                    tempRigidBody = nGameObject[nElemento].GetComponent<Rigidbody>();
+                    tempFixedJoint = nGameObject[nElemento].GetComponent<FixedJoint>();
+                    temp2FixedJoint = nGameObject[nElemento - 1].GetComponent<FixedJoint>();
+                    temp2FixedJoint.connectedBody = tempRigidBody; //Unimos el trozo de cable anterior al nuevo trozo de cable			
+                    transform.localPosition += new Vector3(0, 0.55f, 0);
+                    limSuperior = transform.localPosition.y;
+                    tempFixedJoint.connectedBody = GetComponent<Rigidbody>(); //Unimos el nuevo trozo de cable a este objeto
+
+                }
 
             }
 
+            //Elevar objeto
+            transform.Translate(new Vector3(0, temp, 0));
+
+
         }
-
-        //Elevar objeto
-        transform.Translate(new Vector3(0, temp, 0));
-
-
     }
 }

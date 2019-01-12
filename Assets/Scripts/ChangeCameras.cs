@@ -7,6 +7,7 @@ public class ChangeCameras : MonoBehaviour {
     bool space;
     public Camera[] cameras;
     public RenderTexture[] renderTexture;
+    public RenderTexture off;
     public Material material;
 
     int actualIndex;
@@ -20,13 +21,21 @@ public class ChangeCameras : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        space = Input.GetButtonDown("Jump");
-        if(space)
+        if (Estados.encendido)
         {
-            actualIndex = (actualIndex + 1) % renderTexture.Length;
-            material.mainTexture = renderTexture[actualIndex]; 
-            //cameras[actualIndex].targetTexture = renderTexture;
+            material.mainTexture = renderTexture[actualIndex];
+            space = Input.GetButtonDown("Jump");
+            if (space)
+            {
+                actualIndex = (actualIndex + 1) % renderTexture.Length;
+                material.mainTexture = renderTexture[actualIndex];
+                //cameras[actualIndex].targetTexture = renderTexture;
 
+            }
+        }
+        else
+        {
+            material.mainTexture = off;
         }
 	}
 }

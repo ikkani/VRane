@@ -2,19 +2,34 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HelpController : MonoBehaviour {
-    bool on = false;
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		if (Input.GetKeyDown(KeyCode.H))
+public class HelpController : MonoBehaviour
+{
+    bool tutorialActivado = false;
+    bool tutorialSiguiente = false;
+
+    public Collider collider;
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Imán"))
         {
-            on = !on;
-            gameObject.transform.GetChild(0).gameObject.SetActive(on);
+            gameObject.transform.GetChild(0).gameObject.SetActive(true);
+            collider.enabled = false;
+            if (!tutorialActivado)
+            {
+                TutorialManager.instance.NextTutorial();
+                tutorialActivado = true;
+            }
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if(Estados.agarrando && !tutorialSiguiente)
+        {
+            TutorialManager.instance.NextTutorial();
+            tutorialSiguiente = true;
+            Debug.Log("Help");
         }
     }
 }
